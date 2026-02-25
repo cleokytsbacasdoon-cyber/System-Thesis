@@ -1,6 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+import { useDarkMode } from '../contexts/DarkModeContext';
 import { ModelMetrics } from '../types';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -11,12 +12,14 @@ interface MetricsChartProps {
 }
 
 export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Model Metrics Over Time' }) => {
+  const { isDarkMode } = useDarkMode();
+
   if (metrics.length === 0) {
-    return <div className="bg-gray-100 p-4 rounded text-center text-gray-600">No data available</div>;
+    return <div className={`p-4 rounded text-center ${isDarkMode ? 'bg-slate-800 text-gray-400' : 'bg-gray-100 text-gray-600'}`}>No data available</div>;
   }
 
   const last10Metrics = metrics.slice(-10).reverse();
-  const labels = last10Metrics.map((m, i) => `${i + 1}`);
+  const labels = last10Metrics.map((_, i) => `${i + 1}`);
 
   const data = {
     labels,
@@ -54,23 +57,41 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Mo
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          color: isDarkMode ? '#e5e7eb' : '#374151',
+        },
       },
       title: {
         display: true,
         text: title,
-        font: { size: 16, weight: 'bold' },
+        font: { size: 16, weight: 'bold' as any },
+        color: isDarkMode ? '#f3f4f6' : '#1f2937',
       },
     },
     scales: {
+      x: {
+        ticks: {
+          color: isDarkMode ? '#9ca3af' : '#6b7280',
+        },
+        grid: {
+          color: isDarkMode ? '#374151' : '#e5e7eb',
+        },
+      },
       y: {
         min: 0,
         max: 100,
+        ticks: {
+          color: isDarkMode ? '#9ca3af' : '#6b7280',
+        },
+        grid: {
+          color: isDarkMode ? '#374151' : '#e5e7eb',
+        },
       },
     },
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
       <Line data={data} options={options} />
     </div>
   );

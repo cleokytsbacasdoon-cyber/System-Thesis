@@ -22,11 +22,7 @@ import {
 import { useToast } from '../contexts/ToastContext';
 import { ModelMetrics, DriftAlert, RetrainingJob, APIEndpoint } from '../types';
 
-interface DashboardProps {
-  onSettingsClick: () => void;
-}
-
-export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
+export const Dashboard: React.FC = () => {
   const { addToast } = useToast();
   const { isDarkMode } = useDarkMode();
   const [metrics, setMetrics] = useState<ModelMetrics[]>([]);
@@ -184,20 +180,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
         {activeTab === 'alerts' && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Total Alerts</p>
-                <p className="text-2xl font-bold">{alerts.length}</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Alerts</p>
+                <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : ''}`}>{alerts.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Unresolved</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Unresolved</p>
                 <p className="text-2xl font-bold text-orange-500">{unresolvedAlerts.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Resolved</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Resolved</p>
                 <p className="text-2xl font-bold text-green-500">{alerts.filter(a => a.resolved).length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">High Severity</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>High Severity</p>
                 <p className="text-2xl font-bold text-red-500">{alerts.filter(a => a.severity === 'high' && !a.resolved).length}</p>
               </div>
             </div>
@@ -212,8 +208,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
                   />
                 ))
               ) : (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                  <p className="text-green-800 font-medium">✓ No active drift alerts</p>
+                <div className={`border rounded-lg p-6 text-center ${isDarkMode ? 'bg-green-900 border-green-700' : 'bg-green-50 border-green-200'}`}>
+                  <p className={`font-medium ${isDarkMode ? 'text-green-200' : 'text-green-800'}`}>✓ No active drift alerts</p>
                 </div>
               )}
             </div>
@@ -234,8 +230,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
                   />
                 ))
               ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg p-8 text-center">
-                  <p className="text-gray-600">No retraining jobs</p>
+                <div className={`col-span-full rounded-lg p-8 text-center ${isDarkMode ? 'bg-slate-800' : 'bg-gray-100'}`}>
+                  <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No retraining jobs</p>
                 </div>
               )}
             </div>
@@ -246,12 +242,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
         {activeTab === 'api' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Total Endpoints</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Endpoints</p>
                 <p className="text-3xl font-bold text-blue-500">{endpoints.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Active</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Active</p>
                 <p className="text-3xl font-bold text-green-500">{endpoints.filter(e => e.status === 'active').length}</p>
               </div>
             </div>
@@ -266,7 +262,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
                   />
                 ))
               ) : (
-                <p className="text-gray-600">No endpoints found</p>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No endpoints found</p>
               )}
             </div>
           </div>
@@ -274,7 +270,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
 
         {/* Export Tab */}
         {activeTab === 'export' && (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
             <DataExport 
               metrics={metrics}
               alerts={alerts}
