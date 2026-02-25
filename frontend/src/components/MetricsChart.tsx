@@ -2,16 +2,16 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import { ModelMetrics } from '../types';
+import { ForecastMetrics } from '../types';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 interface MetricsChartProps {
-  metrics: ModelMetrics[];
+  metrics: ForecastMetrics[];
   title?: string;
 }
 
-export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Model Metrics Over Time' }) => {
+export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Forecast Accuracy Over Time' }) => {
   const { isDarkMode } = useDarkMode();
 
   if (metrics.length === 0) {
@@ -25,24 +25,24 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Mo
     labels,
     datasets: [
       {
-        label: 'Accuracy',
-        data: last10Metrics.map(m => (m.accuracy * 100).toFixed(2)),
+        label: 'MAPE (%)',
+        data: last10Metrics.map(m => m.mape.toFixed(2)),
         borderColor: '#3B82F6',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
         tension: 0.4,
       },
       {
-        label: 'Precision',
-        data: last10Metrics.map(m => (m.precision * 100).toFixed(2)),
+        label: 'R² Score',
+        data: last10Metrics.map(m => (m.r2Score * 100).toFixed(2)),
         borderColor: '#10B981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         fill: true,
         tension: 0.4,
       },
       {
-        label: 'Recall',
-        data: last10Metrics.map(m => (m.recall * 100).toFixed(2)),
+        label: 'RMSE (rooms)',
+        data: last10Metrics.map(m => m.rmse.toFixed(2)),
         borderColor: '#F59E0B',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
         fill: true,

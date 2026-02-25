@@ -1,13 +1,13 @@
-export interface ModelMetrics {
+export interface ForecastMetrics {
   id: string;
-  accuracy: number;
-  precision: number;
-  recall: number;
-  f1Score: number;
+  mape: number;        // Mean Absolute Percentage Error
+  rmse: number;        // Root Mean Squared Error
+  mae: number;         // Mean Absolute Error
+  r2Score: number;     // R-squared
   timestamp: string;
 }
 
-export interface DriftAlert {
+export interface DemandAlert {
   id: string;
   modelId: string;
   severity: 'low' | 'medium' | 'high';
@@ -16,6 +16,7 @@ export interface DriftAlert {
   currentValue: number;
   timestamp: string;
   resolved: boolean;
+  alertType?: 'seasonality' | 'trend' | 'anomaly' | 'drift';
 }
 
 export interface RetrainingJob {
@@ -37,9 +38,51 @@ export interface APIEndpoint {
   lastCheck: string;
 }
 
+export interface ModelVersion {
+  id: string;
+  version: string;
+  deployDate: string;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  status: 'active' | 'archived';
+}
+
+export interface DataQuality {
+  id: string;
+  completeness: number;
+  schemaValid: boolean;
+  freshness: number;
+  lastUpdate: string;
+  recordsProcessed: number;
+}
+
+export interface DemandForecast {
+  id: string;
+  actualOccupancy: number;      // Actual rooms occupied
+  predictedOccupancy: number;   // Forecasted rooms
+  error: number;
+  date: string;
+  location?: string;
+  accommodationType?: string;
+}
+
+export interface FeatureImportance {
+  name: string;          // e.g., 'seasonality', 'events', 'price', 'weather'
+  importance: number;
+  category?: 'temporal' | 'economic' | 'external' | 'historical';
+}
+
+export interface ForecastInsights {
+  topFeatures: FeatureImportance[];
+  featureDrift: { [key: string]: number };
+  sampleForecasts: DemandForecast[];
+  seasonalTrends?: { month: string; avgOccupancy: number }[];
+}
+
 export interface DashboardData {
-  modelMetrics: ModelMetrics[];
-  driftAlerts: DriftAlert[];
+  forecastMetrics: ForecastMetrics[];
+  demandAlerts: DemandAlert[];
   retrainingJobs: RetrainingJob[];
   apiEndpoints: APIEndpoint[];
 }

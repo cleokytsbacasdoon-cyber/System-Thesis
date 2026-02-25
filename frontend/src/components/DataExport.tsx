@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import { ModelMetrics, DriftAlert, RetrainingJob, APIEndpoint } from '../types';
+import { ForecastMetrics, DemandAlert, RetrainingJob, APIEndpoint } from '../types';
 
 interface DataExportProps {
-  metrics: ModelMetrics[];
-  alerts: DriftAlert[];
+  metrics: ForecastMetrics[];
+  alerts: DemandAlert[];
   jobs: RetrainingJob[];
   endpoints: APIEndpoint[];
 }

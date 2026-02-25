@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import { DriftAlert } from '../types';
+import { DemandAlert } from '../types';
 
 interface DriftStatsProps {
-  alerts: DriftAlert[];
+  alerts: DemandAlert[];
 }
 
 export const DriftStats: React.FC<DriftStatsProps> = ({ alerts }) => {
@@ -11,8 +11,6 @@ export const DriftStats: React.FC<DriftStatsProps> = ({ alerts }) => {
   const totalAlerts = alerts.length;
   const unresolvedAlerts = alerts.filter(a => !a.resolved).length;
   const highSeverity = alerts.filter(a => a.severity === 'high' && !a.resolved).length;
-  const mediumSeverity = alerts.filter(a => a.severity === 'medium' && !a.resolved).length;
-  const lowSeverity = alerts.filter(a => a.severity === 'low' && !a.resolved).length;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

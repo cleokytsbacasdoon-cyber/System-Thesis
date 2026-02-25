@@ -2,16 +2,16 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import { ModelMetrics } from '../types';
+import { ForecastMetrics } from '../types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface PerformanceChartProps {
-  latest: ModelMetrics | null;
+  latest: ForecastMetrics | null;
   title?: string;
 }
 
-export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, title = 'Latest Model Performance' }) => {
+export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, title = 'Latest Forecast Performance' }) => {
   const { isDarkMode } = useDarkMode();
 
   if (!latest) {
@@ -19,15 +19,15 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, titl
   }
 
   const data = {
-    labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+    labels: ['MAPE (%)', 'RMSE (rooms)', 'MAE (rooms)', 'R² Score (x100)'],
     datasets: [
       {
-        label: 'Score (%)',
+        label: 'Metric Value',
         data: [
-          (latest.accuracy * 100).toFixed(2),
-          (latest.precision * 100).toFixed(2),
-          (latest.recall * 100).toFixed(2),
-          (latest.f1Score * 100).toFixed(2),
+          latest.mape.toFixed(2),
+          latest.rmse.toFixed(2),
+          latest.mae.toFixed(2),
+          (latest.r2Score * 100).toFixed(2),
         ],
         backgroundColor: [
           '#3B82F6',

@@ -1,33 +1,34 @@
 import { describe, it, expect } from 'vitest';
-import { ModelMetrics, DriftAlert, RetrainingJob } from './types';
+import { ForecastMetrics, DemandAlert, RetrainingJob } from './types';
 
 describe('Types - MetricsCard', () => {
-  it('should create valid ModelMetrics', () => {
-    const metric: ModelMetrics = {
+  it('should create valid ForecastMetrics', () => {
+    const metric: ForecastMetrics = {
       id: '1',
-      accuracy: 0.95,
-      precision: 0.93,
-      recall: 0.94,
-      f1Score: 0.935,
+      mape: 8.5,
+      rmse: 15.2,
+      mae: 12.3,
+      r2Score: 0.92,
       timestamp: '2026-02-25T10:30:00Z',
     };
 
-    expect(metric.accuracy).toBeLessThanOrEqual(1);
-    expect(metric.accuracy).toBeGreaterThanOrEqual(0);
+    expect(metric.mape).toBeGreaterThanOrEqual(0);
+    expect(metric.r2Score).toBeLessThanOrEqual(1);
   });
 });
 
-describe('Types - DriftAlert', () => {
-  it('should create valid DriftAlert', () => {
-    const alert: DriftAlert = {
+describe('Types - DemandAlert', () => {
+  it('should create valid DemandAlert', () => {
+    const alert: DemandAlert = {
       id: '1',
       modelId: 'model-1',
       severity: 'high',
-      message: 'Drift detected',
+      message: 'Demand surge detected',
       threshold: 0.15,
       currentValue: 0.45,
       resolved: false,
       timestamp: '2026-02-25T10:30:00Z',
+      alertType: 'anomaly',
     };
 
     expect(['low', 'medium', 'high']).toContain(alert.severity);
