@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDarkMode } from '../contexts/DarkModeContext';
 import { DriftAlert } from '../types';
 
 interface DriftAlertCardProps {
@@ -7,16 +8,18 @@ interface DriftAlertCardProps {
 }
 
 export const DriftAlertCard: React.FC<DriftAlertCardProps> = ({ alert, onResolve }) => {
+  const { isDarkMode } = useDarkMode();
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'high':
-        return 'bg-red-100 border-red-500 text-red-800';
+        return isDarkMode ? 'bg-red-900 border-red-600 text-red-200' : 'bg-red-100 border-red-500 text-red-800';
       case 'medium':
-        return 'bg-yellow-100 border-yellow-500 text-yellow-800';
+        return isDarkMode ? 'bg-yellow-900 border-yellow-600 text-yellow-200' : 'bg-yellow-100 border-yellow-500 text-yellow-800';
       case 'low':
-        return 'bg-blue-100 border-blue-500 text-blue-800';
+        return isDarkMode ? 'bg-blue-900 border-blue-600 text-blue-200' : 'bg-blue-100 border-blue-500 text-blue-800';
       default:
-        return 'bg-gray-100 border-gray-500 text-gray-800';
+        return isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-gray-100 border-gray-500 text-gray-800';
     }
   };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDarkMode } from '../contexts/DarkModeContext';
 import { ModelMetrics, DriftAlert, RetrainingJob, APIEndpoint } from '../types';
 
 interface DataExportProps {
@@ -9,6 +10,7 @@ interface DataExportProps {
 }
 
 export const DataExport: React.FC<DataExportProps> = ({ metrics, alerts, jobs, endpoints }) => {
+  const { isDarkMode } = useDarkMode();
   const exportToJSON = (data: any, filename: string) => {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
@@ -84,10 +86,10 @@ export const DataExport: React.FC<DataExportProps> = ({ metrics, alerts, jobs, e
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold text-dark">Export Data</h3>
+      <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-dark'}`}>Export Data</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
           <h4 className="font-semibold mb-3">Model Metrics</h4>
           <div className="flex gap-2">
             <button
@@ -105,7 +107,7 @@ export const DataExport: React.FC<DataExportProps> = ({ metrics, alerts, jobs, e
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
           <h4 className="font-semibold mb-3">Drift Alerts</h4>
           <div className="flex gap-2">
             <button
@@ -123,7 +125,7 @@ export const DataExport: React.FC<DataExportProps> = ({ metrics, alerts, jobs, e
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
           <h4 className="font-semibold mb-3">Retraining Jobs</h4>
           <div className="flex gap-2">
             <button
@@ -141,7 +143,7 @@ export const DataExport: React.FC<DataExportProps> = ({ metrics, alerts, jobs, e
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
           <h4 className="font-semibold mb-3">Full Export</h4>
           <button
             onClick={handleExportAll}

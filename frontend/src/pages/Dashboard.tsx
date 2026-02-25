@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useDarkMode } from '../contexts/DarkModeContext';
 import { MetricsCard } from '../components/MetricsCard';
 import { DriftAlertCard } from '../components/DriftAlertCard';
 import { RetrainingJobCard } from '../components/RetrainingJobCard';
@@ -27,6 +28,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
   const { addToast } = useToast();
+  const { isDarkMode } = useDarkMode();
   const [metrics, setMetrics] = useState<ModelMetrics[]>([]);
   const [alerts, setAlerts] = useState<DriftAlert[]>([]);
   const [jobs, setJobs] = useState<RetrainingJob[]>([]);
@@ -114,22 +116,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
 
   if (loading && metrics.length === 0) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className={`flex items-center justify-center h-screen ${isDarkMode ? 'dark' : ''}`}>
         <div className="text-center">
           <div className="animate-spin mb-4">⏳</div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${isDarkMode ? 'dark bg-slate-950' : 'bg-gray-50'}`}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-dark">ML Monitoring Dashboard</h1>
-            <p className="text-gray-600 mt-2">Real-time monitoring and analytics</p>
+            <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-dark'}`}>ML Monitoring Dashboard</h1>
+            <p className={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Real-time monitoring and analytics</p>
           </div>
           <button
             onClick={() => loadData()}
@@ -145,20 +147,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
-                <p className="text-sm text-gray-600">Total Metrics</p>
+              <div className={`rounded-lg shadow p-4 border-l-4 border-blue-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Metrics</p>
                 <p className="text-3xl font-bold text-blue-500">{metrics.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
-                <p className="text-sm text-gray-600">Active Alerts</p>
+              <div className={`rounded-lg shadow p-4 border-l-4 border-orange-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Active Alerts</p>
                 <p className="text-3xl font-bold text-orange-500">{unresolvedAlerts.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-                <p className="text-sm text-gray-600">Retraining Jobs</p>
+              <div className={`rounded-lg shadow p-4 border-l-4 border-green-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Retraining Jobs</p>
                 <p className="text-3xl font-bold text-green-500">{jobs.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
-                <p className="text-sm text-gray-600">API Endpoints</p>
+              <div className={`rounded-lg shadow p-4 border-l-4 border-purple-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>API Endpoints</p>
                 <p className="text-3xl font-bold text-purple-500">{endpoints.length}</p>
               </div>
             </div>
