@@ -24,10 +24,10 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, titl
       {
         label: 'Metric Value',
         data: [
-          latest.mape.toFixed(2),
-          latest.rmse.toFixed(2),
-          latest.mae.toFixed(2),
-          (latest.r2Score * 100).toFixed(2),
+          (latest.accuracy * 100).toFixed(2),
+          (latest.precision * 100).toFixed(2),
+          (latest.recall * 100).toFixed(2),
+          (latest.f1Score * 100).toFixed(2),
         ],
         backgroundColor: [
           '#3B82F6',

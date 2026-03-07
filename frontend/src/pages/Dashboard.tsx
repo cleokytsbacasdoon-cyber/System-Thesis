@@ -29,9 +29,13 @@ import {
   checkEndpointStatus 
 } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
-import { ForecastMetrics, DemandAlert, RetrainingJob, APIEndpoint, ModelVersion, DataQuality, DemandForecast, FeatureImportance, ForecastInsights as ForecastInsightsType } from '../types';
+import { ModelMetrics, DriftAlert, RetrainingJob, APIEndpoint } from '../types';
 
-export const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onSettingsClick: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
   const { addToast } = useToast();
   const { isDarkMode } = useDarkMode();
   const [metrics, setMetrics] = useState<ForecastMetrics[]>([]);
@@ -125,37 +129,13 @@ export const Dashboard: React.FC = () => {
   const latestMetric = useMemo(() => metrics.length > 0 ? metrics[0] : null, [metrics]);
   const unresolvedAlerts = useMemo(() => alerts.filter(a => !a.resolved), [alerts]);
 
-  const tabGroups = [
-    {
-      category: 'Monitoring',
-      tabs: [
-        { id: 'overview', label: '📊 Overview' },
-        { id: 'metrics', label: '📈 Metrics' },
-        { id: 'alerts', label: '⚠️ Alerts' },
-      ],
-    },
-    {
-      category: 'Operations',
-      tabs: [
-        { id: 'retraining', label: '🔄 Retraining' },
-        { id: 'api', label: '🔗 API' },
-      ],
-    },
-    {
-      category: 'Analytics',
-      tabs: [
-        { id: 'registry', label: '📦 Registry' },
-        { id: 'quality', label: '✅ Quality' },
-        { id: 'accuracy', label: '🎯 Accuracy' },
-        { id: 'insights', label: '💡 Insights' },
-      ],
-    },
-    {
-      category: 'Utilities',
-      tabs: [
-        { id: 'export', label: '📥 Export' },
-      ],
-    },
+  const tabs = [
+    { id: 'overview', label: '📊 Overview' },
+    { id: 'metrics', label: '📈 Metrics' },
+    { id: 'alerts', label: '⚠️ Alerts' },
+    { id: 'retraining', label: '🔄 Retraining' },
+    { id: 'api', label: '🔗 API' },
+    { id: 'export', label: '📥 Export' },
   ];
 
   if (loading && metrics.length === 0) {
@@ -177,12 +157,20 @@ export const Dashboard: React.FC = () => {
             <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-dark'}`}>Tourism Demand Forecasting Dashboard</h1>
             <p className={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Real-time accommodation demand monitoring and forecasting</p>
           </div>
-          <button
-            onClick={() => loadData()}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition"
-          >
-            🔄 Refresh
-          </button>
+          <div className="flex items-center gap-4 border border-transparent rounded p-1">
+            <button
+              onClick={() => loadData()}
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition"
+            >
+              🔄 Refresh
+            </button>
+            <button
+              onClick={() => setActiveTab('export')}
+              className={`px-4 py-2 rounded-lg transition ${activeTab === 'export' ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            >
+              📥 Export
+            </button>
+          </div>
         </div>
 
         <TabNavigation 
@@ -193,7 +181,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">
+          <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className={`rounded-lg shadow p-4 border-l-4 border-blue-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Forecast Accuracy</p>
@@ -222,7 +210,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Metrics Tab */}
         {activeTab === 'metrics' && (
-          <div className="space-y-6">
+          <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             {latestMetric && <PerformanceChart latest={latestMetric} />}
             {metrics.length > 0 && <MetricsChart metrics={metrics} />}
           </div>
@@ -230,7 +218,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Alerts Tab */}
         {activeTab === 'alerts' && (
-          <div className="space-y-6">
+          <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Alerts</p>
@@ -270,7 +258,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Retraining Tab */}
         {activeTab === 'retraining' && (
-          <div className="space-y-6">
+          <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <RetrainingStats jobs={jobs} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {jobs.length > 0 ? (
@@ -292,7 +280,7 @@ export const Dashboard: React.FC = () => {
 
         {/* API Tab */}
         {activeTab === 'api' && (
-          <div className="space-y-6">
+          <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Endpoints</p>
@@ -350,7 +338,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Export Tab */}
         {activeTab === 'export' && (
-          <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+          <div className="bg-white rounded-lg shadow-md p-6">
             <DataExport 
               metrics={metrics}
               alerts={alerts}
@@ -359,6 +347,7 @@ export const Dashboard: React.FC = () => {
             />
           </div>
         )}
+
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { ForecastMetrics } from '../types';
+import React, { memo } from 'react';
+import { ModelMetrics } from '../types';
 
 interface MemoMetricsCardProps {
   metric: ForecastMetrics;
