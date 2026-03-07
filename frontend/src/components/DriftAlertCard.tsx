@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import { DriftAlert } from '../types';
+import { DemandAlert } from '../types';
 
 interface DriftAlertCardProps {
-  alert: DriftAlert;
+  alert: DemandAlert;
   onResolve: (alertId: string) => void;
 }
 
@@ -23,11 +23,29 @@ export const DriftAlertCard: React.FC<DriftAlertCardProps> = ({ alert, onResolve
     }
   };
 
+  const getAlertTypeBadge = (alertType?: string) => {
+    if (!alertType) return null;
+    const colors = {
+      seasonality: 'bg-purple-500',
+      trend: 'bg-blue-500',
+      anomaly: 'bg-orange-500',
+      drift: 'bg-red-500',
+    };
+    return (
+      <span className={`text-xs px-2 py-1 rounded ${colors[alertType as keyof typeof colors] || 'bg-gray-500'} text-white ml-2`}>
+        {alertType}
+      </span>
+    );
+  };
+
   return (
     <div className={`rounded-lg shadow-md p-4 border-l-4 ${getSeverityColor(alert.severity)} ${alert.resolved ? 'opacity-60' : ''}`}>
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <h4 className="font-semibold mb-2">{alert.message}</h4>
+          <h4 className="font-semibold mb-2">
+            {alert.message}
+            {getAlertTypeBadge(alert.alertType)}
+          </h4>
           <p className="text-sm mb-2">
             Threshold: {alert.threshold.toFixed(4)} | Current: {alert.currentValue.toFixed(4)}
           </p>

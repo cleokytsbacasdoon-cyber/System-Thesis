@@ -1,30 +1,30 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { ModelMetrics } from '../types';
 
 interface MemoMetricsCardProps {
-  metric: ModelMetrics;
+  metric: ForecastMetrics;
 }
 
 export const MemoMetricsCard = memo<MemoMetricsCardProps>(({ metric }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-primary">
-      <h3 className="text-lg font-semibold text-dark mb-4">Model Metrics</h3>
+      <h3 className="text-lg font-semibold text-dark mb-4">Forecast Accuracy Metrics</h3>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-sm text-gray-600">Accuracy</p>
-          <p className="text-2xl font-bold text-primary">{(metric.accuracy * 100).toFixed(2)}%</p>
+          <p className="text-sm text-gray-600">MAPE</p>
+          <p className="text-2xl font-bold text-primary">{metric.mape.toFixed(2)}%</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Precision</p>
-          <p className="text-2xl font-bold text-primary">{(metric.precision * 100).toFixed(2)}%</p>
+          <p className="text-sm text-gray-600">RMSE</p>
+          <p className="text-2xl font-bold text-primary">{metric.rmse.toFixed(2)} rooms</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Recall</p>
-          <p className="text-2xl font-bold text-secondary">{(metric.recall * 100).toFixed(2)}%</p>
+          <p className="text-sm text-gray-600">MAE</p>
+          <p className="text-2xl font-bold text-secondary">{metric.mae.toFixed(2)} rooms</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">F1 Score</p>
-          <p className="text-2xl font-bold text-secondary">{(metric.f1Score * 100).toFixed(2)}%</p>
+          <p className="text-sm text-gray-600">R² Score</p>
+          <p className="text-2xl font-bold text-secondary">{metric.r2Score.toFixed(3)}</p>
         </div>
       </div>
       <p className="text-xs text-gray-500 mt-4">

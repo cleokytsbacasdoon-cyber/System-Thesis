@@ -1,30 +1,33 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { ModelMetrics } from '../types';
+import { useDarkMode } from '../contexts/DarkModeContext';
+import { ForecastMetrics } from '../types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface PerformanceChartProps {
-  latest: ModelMetrics | null;
+  latest: ForecastMetrics | null;
   title?: string;
 }
 
-export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, title = 'Latest Model Performance' }) => {
+export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, title = 'Latest Forecast Performance' }) => {
+  const { isDarkMode } = useDarkMode();
+
   if (!latest) {
-    return <div className="bg-gray-100 p-4 rounded text-center text-gray-600">No data available</div>;
+    return <div className={`p-4 rounded text-center ${isDarkMode ? 'bg-slate-800 text-gray-400' : 'bg-gray-100 text-gray-600'}`}>No data available</div>;
   }
 
   const data = {
-    labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+    labels: ['MAPE (%)', 'RMSE (rooms)', 'MAE (rooms)', 'R² Score (x100)'],
     datasets: [
       {
-        label: 'Score (%)',
+        label: 'Metric Value',
         data: [
-          Number((latest.accuracy * 100).toFixed(2)),
-          Number((latest.precision * 100).toFixed(2)),
-          Number((latest.recall * 100).toFixed(2)),
-          Number((latest.f1Score * 100).toFixed(2)),
+          (latest.accuracy * 100).toFixed(2),
+          (latest.precision * 100).toFixed(2),
+          (latest.recall * 100).toFixed(2),
+          (latest.f1Score * 100).toFixed(2),
         ],
         backgroundColor: [
           '#3B82F6',
@@ -44,23 +47,41 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, titl
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          color: isDarkMode ? '#e5e7eb' : '#374151',
+        },
       },
       title: {
         display: true,
         text: title,
         font: { size: 16, weight: 'bold' as any },
+        color: isDarkMode ? '#f3f4f6' : '#1f2937',
       },
     },
     scales: {
       x: {
         min: 0,
         max: 100,
+        ticks: {
+          color: isDarkMode ? '#9ca3af' : '#6b7280',
+        },
+        grid: {
+          color: isDarkMode ? '#374151' : '#e5e7eb',
+        },
+      },
+      y: {
+        ticks: {
+          color: isDarkMode ? '#9ca3af' : '#6b7280',
+        },
+        grid: {
+          color: isDarkMode ? '#374151' : '#e5e7eb',
+        },
       },
     },
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
       <Bar data={data} options={options} />
     </div>
   );

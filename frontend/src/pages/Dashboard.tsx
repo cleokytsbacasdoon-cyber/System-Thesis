@@ -9,26 +9,44 @@ import { PerformanceChart } from '../components/PerformanceChart';
 import { DriftStats } from '../components/DriftStats';
 import { RetrainingStats } from '../components/RetrainingStats';
 import { DataExport } from '../components/DataExport';
-import { Tabs } from '../components/Tabs';
+import { ModelRegistry } from '../components/ModelRegistry';
+import { DataQualityDashboard } from '../components/DataQualityDashboard';
+import { AccuracyMonitoring } from '../components/AccuracyMonitoring';
+import { ModelInsights } from '../components/ModelInsights';
+import { TabNavigation } from '../components/TabNavigation';
 import { 
-  getModelMetrics, 
-  getDriftAlerts, 
+  getForecastMetrics, 
+  getDemandAlerts, 
   getRetrainingJobs, 
   getAPIEndpoints,
-  resolveDriftAlert,
+  getModelVersions,
+  getDataQuality,
+  getDemandForecasts,
+  getFeatureImportance,
+  getForecastInsights,
+  resolveDemandAlert,
   startRetrainingJob,
   checkEndpointStatus 
 } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { ModelMetrics, DriftAlert, RetrainingJob, APIEndpoint } from '../types';
 
-export const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onSettingsClick: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
   const { addToast } = useToast();
   const { isDarkMode } = useDarkMode();
-  const [metrics, setMetrics] = useState<ModelMetrics[]>([]);
-  const [alerts, setAlerts] = useState<DriftAlert[]>([]);
+  const [metrics, setMetrics] = useState<ForecastMetrics[]>([]);
+  const [alerts, setAlerts] = useState<DemandAlert[]>([]);
   const [jobs, setJobs] = useState<RetrainingJob[]>([]);
   const [endpoints, setEndpoints] = useState<APIEndpoint[]>([]);
+  const [modelVersions, setModelVersions] = useState<ModelVersion[]>([]);
+  const [dataQuality, setDataQuality] = useState<DataQuality | null>(null);
+  const [forecasts, setForecasts] = useState<DemandForecast[]>([]);
+  const [features, setFeatures] = useState<FeatureImportance[]>([]);
+  const [_forecastInsights, setForecastInsights] = useState<ForecastInsightsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [refreshInterval, setRefreshInterval] = useState(30);
@@ -50,17 +68,27 @@ export const Dashboard: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [metricsData, alertsData, jobsData, endpointsData] = await Promise.all([
-        getModelMetrics(),
-        getDriftAlerts(),
+      const [metricsData, alertsData, jobsData, endpointsData, versionsData, qualityData, forecastsData, featuresData, insightsData] = await Promise.all([
+        getForecastMetrics(),
+        getDemandAlerts(),
         getRetrainingJobs(),
         getAPIEndpoints(),
+        getModelVersions(),
+        getDataQuality(),
+        getDemandForecasts(),
+        getFeatureImportance(),
+        getForecastInsights(),
       ]);
 
       setMetrics(metricsData);
       setAlerts(alertsData);
       setJobs(jobsData);
       setEndpoints(endpointsData);
+      setModelVersions(versionsData);
+      setDataQuality(qualityData);
+      setForecasts(forecastsData);
+      setFeatures(featuresData);
+      setForecastInsights(insightsData);
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to load data', 'error');
     } finally {
@@ -70,7 +98,7 @@ export const Dashboard: React.FC = () => {
 
   const handleResolveAlert = async (alertId: string) => {
     try {
-      await resolveDriftAlert(alertId);
+      await resolveDemandAlert(alertId);
       setAlerts(alerts.map(a => a.id === alertId ? { ...a, resolved: true } : a));
       addToast('Alert resolved', 'success');
     } catch (err) {
@@ -107,6 +135,7 @@ export const Dashboard: React.FC = () => {
     { id: 'alerts', label: '⚠️ Alerts' },
     { id: 'retraining', label: '🔄 Retraining' },
     { id: 'api', label: '🔗 API' },
+    { id: 'export', label: '📥 Export' },
   ];
 
   if (loading && metrics.length === 0) {
@@ -125,8 +154,8 @@ export const Dashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-dark'}`}>ML Monitoring Dashboard</h1>
-            <p className={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Real-time monitoring and analytics</p>
+            <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-dark'}`}>Tourism Demand Forecasting Dashboard</h1>
+            <p className={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Real-time accommodation demand monitoring and forecasting</p>
           </div>
           <div className="flex items-center gap-4 border border-transparent rounded p-1">
             <button
@@ -144,18 +173,22 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <Tabs activeTab={activeTab} tabs={tabs} onTabChange={setActiveTab} />
+        <TabNavigation 
+          activeTab={activeTab} 
+          tabGroups={tabGroups} 
+          onTabChange={setActiveTab} 
+        />
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className={`rounded-lg shadow p-4 border-l-4 border-blue-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Metrics</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Forecast Accuracy</p>
                 <p className="text-3xl font-bold text-blue-500">{metrics.length}</p>
               </div>
               <div className={`rounded-lg shadow p-4 border-l-4 border-orange-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Active Alerts</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Demand Alerts</p>
                 <p className="text-3xl font-bold text-orange-500">{unresolvedAlerts.length}</p>
               </div>
               <div className={`rounded-lg shadow p-4 border-l-4 border-green-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
@@ -163,7 +196,7 @@ export const Dashboard: React.FC = () => {
                 <p className="text-3xl font-bold text-green-500">{jobs.length}</p>
               </div>
               <div className={`rounded-lg shadow p-4 border-l-4 border-purple-500 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white'}`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>API Endpoints</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Data Endpoints</p>
                 <p className="text-3xl font-bold text-purple-500">{endpoints.length}</p>
               </div>
             </div>
@@ -187,20 +220,20 @@ export const Dashboard: React.FC = () => {
         {activeTab === 'alerts' && (
           <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Total Alerts</p>
-                <p className="text-2xl font-bold">{alerts.length}</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Alerts</p>
+                <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : ''}`}>{alerts.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Unresolved</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Unresolved</p>
                 <p className="text-2xl font-bold text-orange-500">{unresolvedAlerts.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Resolved</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Resolved</p>
                 <p className="text-2xl font-bold text-green-500">{alerts.filter(a => a.resolved).length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">High Severity</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>High Severity</p>
                 <p className="text-2xl font-bold text-red-500">{alerts.filter(a => a.severity === 'high' && !a.resolved).length}</p>
               </div>
             </div>
@@ -215,8 +248,8 @@ export const Dashboard: React.FC = () => {
                   />
                 ))
               ) : (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                  <p className="text-green-800 font-medium">✓ No active drift alerts</p>
+                <div className={`border rounded-lg p-6 text-center ${isDarkMode ? 'bg-green-900 border-green-700' : 'bg-green-50 border-green-200'}`}>
+                  <p className={`font-medium ${isDarkMode ? 'text-green-200' : 'text-green-800'}`}>✓ No active demand alerts</p>
                 </div>
               )}
             </div>
@@ -237,8 +270,8 @@ export const Dashboard: React.FC = () => {
                   />
                 ))
               ) : (
-                <div className="col-span-full bg-gray-100 rounded-lg p-8 text-center">
-                  <p className="text-gray-600">No retraining jobs</p>
+                <div className={`col-span-full rounded-lg p-8 text-center ${isDarkMode ? 'bg-slate-800' : 'bg-gray-100'}`}>
+                  <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No retraining jobs</p>
                 </div>
               )}
             </div>
@@ -249,12 +282,12 @@ export const Dashboard: React.FC = () => {
         {activeTab === 'api' && (
           <div className={`space-y-6 rounded-lg p-6 ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Total Endpoints</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Endpoints</p>
                 <p className="text-3xl font-bold text-blue-500">{endpoints.length}</p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Active</p>
+              <div className={`rounded-lg shadow p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Active</p>
                 <p className="text-3xl font-bold text-green-500">{endpoints.filter(e => e.status === 'active').length}</p>
               </div>
             </div>
@@ -269,15 +302,43 @@ export const Dashboard: React.FC = () => {
                   />
                 ))
               ) : (
-                <p className="text-gray-600">No endpoints found</p>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>No endpoints found</p>
               )}
             </div>
           </div>
         )}
 
+        {/* Model Registry Tab */}
+        {activeTab === 'registry' && modelVersions.length > 0 && (
+          <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+            <ModelRegistry versions={modelVersions} />
+          </div>
+        )}
+
+        {/* Data Quality Tab */}
+        {activeTab === 'quality' && dataQuality && (
+          <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+            <DataQualityDashboard quality={dataQuality} />
+          </div>
+        )}
+
+        {/* Accuracy Monitoring Tab */}
+        {activeTab === 'accuracy' && forecasts.length > 0 && (
+          <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+            <AccuracyMonitoring forecasts={forecasts} />
+          </div>
+        )}
+
+        {/* Model Insights Tab */}
+        {activeTab === 'insights' && features.length > 0 && forecasts.length > 0 && (
+          <div className={`rounded-lg shadow-md p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+            <ModelInsights features={features} forecasts={forecasts} />
+          </div>
+        )}
+
         {/* Export Tab */}
         {activeTab === 'export' && (
-          <div className={`rounded-lg p-6 shadow-md ${isDarkMode ? 'bg-slate-800 text-white border border-slate-700' : 'bg-white border'}`}>
+          <div className="bg-white rounded-lg shadow-md p-6">
             <DataExport 
               metrics={metrics}
               alerts={alerts}

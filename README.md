@@ -1,4 +1,4 @@
-# ML Monitoring System - Frontend Only
+# ML Monitoring System
 
 A comprehensive React TypeScript dashboard for machine learning model monitoring with auto-retraining capabilities, drift detection notifications, and API display features.
 
