@@ -21,10 +21,10 @@ export const PerformanceChart: React.FC<PerformanceChartProps> = ({ latest, titl
       {
         label: 'Score (%)',
         data: [
-          (latest.accuracy * 100).toFixed(2),
-          (latest.precision * 100).toFixed(2),
-          (latest.recall * 100).toFixed(2),
-          (latest.f1Score * 100).toFixed(2),
+          Number((latest.accuracy * 100).toFixed(2)),
+          Number((latest.precision * 100).toFixed(2)),
+          Number((latest.recall * 100).toFixed(2)),
+          Number((latest.f1Score * 100).toFixed(2)),
         ],
         backgroundColor: [
           '#3B82F6',

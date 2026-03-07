@@ -9,8 +9,6 @@ export const DriftStats: React.FC<DriftStatsProps> = ({ alerts }) => {
   const totalAlerts = alerts.length;
   const unresolvedAlerts = alerts.filter(a => !a.resolved).length;
   const highSeverity = alerts.filter(a => a.severity === 'high' && !a.resolved).length;
-  const mediumSeverity = alerts.filter(a => a.severity === 'medium' && !a.resolved).length;
-  const lowSeverity = alerts.filter(a => a.severity === 'low' && !a.resolved).length;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

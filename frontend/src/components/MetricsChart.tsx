@@ -16,14 +16,14 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Mo
   }
 
   const last10Metrics = metrics.slice(-10).reverse();
-  const labels = last10Metrics.map((m, i) => `${i + 1}`);
+  const labels = last10Metrics.map((_, i) => `${i + 1}`);
 
   const data = {
     labels,
     datasets: [
       {
         label: 'Accuracy',
-        data: last10Metrics.map(m => (m.accuracy * 100).toFixed(2)),
+        data: last10Metrics.map(m => Number((m.accuracy * 100).toFixed(2))),
         borderColor: '#3B82F6',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
@@ -31,7 +31,7 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Mo
       },
       {
         label: 'Precision',
-        data: last10Metrics.map(m => (m.precision * 100).toFixed(2)),
+        data: last10Metrics.map(m => Number((m.precision * 100).toFixed(2))),
         borderColor: '#10B981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         fill: true,
@@ -39,7 +39,7 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({ metrics, title = 'Mo
       },
       {
         label: 'Recall',
-        data: last10Metrics.map(m => (m.recall * 100).toFixed(2)),
+        data: last10Metrics.map(m => Number((m.recall * 100).toFixed(2))),
         borderColor: '#F59E0B',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
         fill: true,

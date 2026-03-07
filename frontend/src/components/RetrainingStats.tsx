@@ -9,7 +9,6 @@ export const RetrainingStats: React.FC<RetrainingStatsProps> = ({ jobs }) => {
   const totalJobs = jobs.length;
   const completedJobs = jobs.filter(j => j.status === 'completed').length;
   const runningJobs = jobs.filter(j => j.status === 'running').length;
-  const failedJobs = jobs.filter(j => j.status === 'failed').length;
   
   const avgAccuracy = jobs
     .filter(j => j.accuracy)

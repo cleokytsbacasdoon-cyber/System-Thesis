@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { APIEndpoint } from '../types';
 
 interface MemoAPICardProps {
@@ -8,7 +8,8 @@ interface MemoAPICardProps {
 
 export const MemoAPIEndpointCard = memo<MemoAPICardProps>(({ endpoint, onCheck }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    /* Added 'border border-gray-200' and lowered shadow to 'shadow-sm' */
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:border-blue-300 transition-colors">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-semibold text-dark">{endpoint.name}</h3>
@@ -30,7 +31,7 @@ export const MemoAPIEndpointCard = memo<MemoAPICardProps>(({ endpoint, onCheck }
         </div>
         <button
           onClick={() => onCheck(endpoint.id)}
-          className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors"
         >
           Check Status
         </button>
