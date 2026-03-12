@@ -29,7 +29,17 @@ import {
   checkEndpointStatus 
 } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
-import { ModelMetrics, DriftAlert, RetrainingJob, APIEndpoint } from '../types';
+import {
+  ForecastMetrics,
+  DemandAlert,
+  RetrainingJob,
+  APIEndpoint,
+  ModelVersion,
+  DataQuality,
+  DemandForecast,
+  FeatureImportance,
+  ForecastInsights as ForecastInsightsType,
+} from '../types';
 
 interface DashboardProps {
   onSettingsClick: () => void;
@@ -129,13 +139,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
   const latestMetric = useMemo(() => metrics.length > 0 ? metrics[0] : null, [metrics]);
   const unresolvedAlerts = useMemo(() => alerts.filter(a => !a.resolved), [alerts]);
 
-  const tabs = [
-    { id: 'overview', label: '📊 Overview' },
-    { id: 'metrics', label: '📈 Metrics' },
-    { id: 'alerts', label: '⚠️ Alerts' },
-    { id: 'retraining', label: '🔄 Retraining' },
-    { id: 'api', label: '🔗 API' },
-    { id: 'export', label: '📥 Export' },
+  const tabGroups = [
+    {
+      category: 'Monitoring',
+      tabs: [
+        { id: 'overview', label: '📊 Overview' },
+        { id: 'metrics', label: '📈 Metrics' },
+        { id: 'alerts', label: '⚠️ Alerts' },
+      ],
+    },
+    {
+      category: 'Operations',
+      tabs: [
+        { id: 'retraining', label: '🔄 Retraining' },
+        { id: 'api', label: '🔗 API' },
+      ],
+    },
+    {
+      category: 'Analytics',
+      tabs: [
+        { id: 'registry', label: '📦 Registry' },
+        { id: 'quality', label: '✅ Quality' },
+        { id: 'accuracy', label: '🎯 Accuracy' },
+        { id: 'insights', label: '💡 Insights' },
+      ],
+    },
+    {
+      category: 'Utilities',
+      tabs: [{ id: 'export', label: '📥 Export' }],
+    },
   ];
 
   if (loading && metrics.length === 0) {
@@ -163,6 +195,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSettingsClick }) => {
               className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition"
             >
               🔄 Refresh
+            </button>
+            <button
+              onClick={onSettingsClick}
+              className={`px-4 py-2 rounded-lg transition ${isDarkMode ? 'bg-slate-700 text-gray-200 hover:bg-slate-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            >
+              ⚙ Settings
             </button>
             <button
               onClick={() => setActiveTab('export')}
