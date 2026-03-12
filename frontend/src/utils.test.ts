@@ -10,7 +10,7 @@ describe('Utils - Formatting', () => {
   it('should calculate average correctly', () => {
     const values = [0.8, 0.9, 0.85];
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
-    expect(avg).toBe(0.85);
+    expect(avg).toBeCloseTo(0.85, 10);
   });
 
   it('should format date correctly', () => {
@@ -69,7 +69,7 @@ describe('Utils - Data Aggregation', () => {
     ];
 
     const total = metrics.reduce((sum, m) => sum + m.accuracy, 0);
-    expect(total).toBe(2.67);
+    expect(total).toBeCloseTo(2.67, 10);
   });
 
   it('should filter resolved alerts', () => {

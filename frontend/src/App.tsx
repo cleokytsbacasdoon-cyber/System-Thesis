@@ -16,7 +16,7 @@ function AppContent() {
       <Header onSettingsClick={() => setCurrentPage('settings')} />
       
       {currentPage === 'dashboard' && (
-        <Dashboard />
+        <Dashboard onSettingsClick={() => setCurrentPage('settings')} />
       )}
       
       {currentPage === 'settings' && (
